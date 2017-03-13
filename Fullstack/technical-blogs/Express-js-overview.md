@@ -66,7 +66,7 @@ Handling responses and requests on your website or application is no small feat.
 
 To receive data from the user, your server will need to read the request's payload. You'll need to make sure the proper verb is tied to the right route, so that a GET does not act like a POST. You'll need to send back correct status codes and, of course, make sure any files or other data arrive at the proper time.
 
-Each subpage will also may also have its own route. For example, www.yoursite.com might offer one response and www.yoursite.com/pictures might offer another.
+Each subpage may also have its own route. For example, www.yoursite.com might offer one response and www.yoursite.com/pictures might offer another.
 
 On a complex website imagine how many routes you would need to create if you had to route the whole site together, piece by piece!
 
@@ -108,38 +108,91 @@ Finally, let's make our app available to other files by putting our app into `mo
 
 Congratulations, you have launched a web server! Now, let's get it to do something.
 
+____
 
+## Routing in Express.js
+
+Now that our app is set up and configured, let's see how Express.js simplifies our routing.
+
+#### Our First Route
+
+Here's what our app currently looks like.
+
+        var express = require('express'); // makes Express available in your app.
+        var app = express();  // Creates an instance of express, which allows us to begin routing.
+
+        app.listen(3000);  // Starts up our server on port 3000.
+        module.exports = app;  // Allows other files to access our Express app.
+
+
+Let's add our first route before we start up our server.
+
+        var express = require('express'); // makes Express available in your app.
+        var app = express();  // Creates an instance of express, which allows us to begin routing.
+
+        // OUR NEW ROUTE
+        app.get('/', function(request, response, next) {
+            response.send(200);
+        });
+
+        app.listen(3000);  // Starts up our server on port 3000.
+        module.exports = app;  // Allows other files to access our Express app.
+
+What's going on here?
+
+If you recall from our last article, HTTP requests all have a *verb* like GET or POST.
+
+When we create a route in Express, we first specify the **verb** that our HTTP request will use. The `get` in our `app.get` is our verb.
+
+`app.get` is a function and takes in the route we want use as its first argument. In this case, we are routing to '/'.
+That means that all GET requests to *localhost:3000* will be handled by this route.
+
+Next we see a **callback function**: `function(request, response, next) { });`
+
+This function is called when the user requests the route. Here's all the action! Let's look at this function more closely.
+
+#### Request & Response
+In Express.js, requests and responses are handled through three core objects, typically named `request` and `response` or `req` and `res`. We'll talk about `next` in a moment.
+
+The `request` object contains properties that allow us to access the components of our HTTP *request*.
+
+For example, we can call `request.body` to see the payload of the HTTP request. We could call `request.method` to see if the request was a GET, POST, or other HTTP verb. Or, we could call `request.ip` to see the IP address that's requesting our site. Check out the Express documentation for how to access each of these elements from your `request` object!
+
+Remember, every HTTP request needs one and only one response. Here's where our `response` object comes in.
+
+An HTTP response might send the user a status code, some files, a website, or more!
+
+With our `response` object, we have methods to easily craft a response.
+
+In our example above we call `response.send(200)`. This sends the `200` status code back to the user when they request our site. We can also call methods like `response.render(template, data)` to render an HTML page or `response.redirect(anotherURL)` to send users somewhere else.
+
+As with `request`, just check out the docs for how to get the most our of your `response` object.
+
+#### Next
+So what's up with `next`? Next is a callback that we can invoke to tell Express to search for another route that satisfies our request.
+
+For example, let's look at our current route:
+
+        app.get('/', function(request, response, next) {
+            response.send(200);
+        });
+
+Let's say that if
+# ^ Start Here
 
 #### how app.use differs from app.get/app.post/app.put etc.
 #### what req, res, and next are / do
 
-The Request Object contains properties that allow us to access the elements of HTTP communication.
-* Route – What's our URL?
-* Verb – Is this a GET/POST/DELETE or other request?
-* Headers – Meta-data about the request.
-* Payload – The actual data sent by the request, like a name submitted into a form.
-
-The Response Object handles similar elements for an HTTP response.
-* Status – The HTTP status code and standard message of the response i.e. 200 / OK!
-* Headers – Meta-data about the response.
-* Body – The data sent back to the client, such as the HTML of a webpage or a file.
-
-In Express.js, requests and responses are handled through core objects, typically named `request` and `response` or `req` and `res`.
-
-
-In the next part of this series, we'll see how to route requests in Express.js.
+In the next part of this series, we'll see how to apply our routes to real-world scenarios, such as when we want to receive data from our users.
 
 ___
 
-## Routing requests (major topic, study carefully!)
 #### methods vs. URIs
 You'll first need to route by *verb*. These are the GET/POST/DELETE methods mentioned earlier that form a core part of the HTTP system.
 
 Here's what our file looks like once we add a route to our main page ('index.html').
 
         var app = require('express');
-
-
 
         app.get('/', function(req, res, next) {
 
